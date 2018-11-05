@@ -1,4 +1,7 @@
 class Parent < ApplicationRecord
-  has_many: kids
+  belongs_to :user
+  has_many :kids
+
+  validates :first_name, :last_name, :user_id, presence: true
 
 end

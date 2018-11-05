@@ -1,34 +1,41 @@
 module Api
   module V1
     class UsersController < ApplicationController
-      # TODO See herer to better organize the errors in Rails API: https://medium.com/rails-ember-beyond/error-handling-in-rails-the-modular-way-9afcddd2fe1b
+      before_action :set_user, only: [:show, :update, :destroy]
 
       def index
         @users = User.all
-        render json: @users, status: :ok
+        json_response(@users)
       end
 
       def show
-        begin
-          @user = User.find(user_id)
-          render json: @user, status: :ok
-        rescue => e
-          render json: user_error
-        end
+        json_response(@user)
+      end
+
+      def create
+        @user = User.create!(user_params)
+        json_response(@user, :created)
+      end
+
+      def update
+        @user.update(user_params)
+        head :no_content
+      end
+
+      def destroy
+        @user.update(status: deleted)
+        head :no_content
       end
 
 
       private
 
-      def user_id
-        params[:id]
+      def user_params
+        params.permit(:email, :encrypted_password)
       end
 
-      def user_error
-        {
-          status: 404,
-          message: 'The requested user was not found'
-        }
+      def set_user
+        @user = User.find(params[:id])
       end
     end
   end

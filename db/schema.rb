@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_10_28_161455) do
+ActiveRecord::Schema.define(version: 2018_11_04_210030) do
 
   create_table "activities", force: :cascade do |t|
     t.string "activity_name"
@@ -64,6 +64,8 @@ ActiveRecord::Schema.define(version: 2018_10_28_161455) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "encrypted_password"
+    t.string "uuid"
+    t.string "status", default: "active"
   end
 
 end
