@@ -1,20 +1,12 @@
 module Api
   module V1
     class ParentsController < ApplicationController
-      before_action :set_parent, only: [:show, :update, :destroy]
-
-      def index
-        @parents = Parent.all
-        json_response(@parents)
-      end
+      before_action :authorize_refresh_by_access_request!, only: [:refresh]
+      before_action :authorize_access_request!, only: [:show, :update]
+      before_action :set_parent, only: [:show, :update]
 
       def show
         json_response(@parent)
-      end
-
-      def create
-        @parent = Parent.create!(parent_params)
-        json_response(@parent, :created)
       end
 
       def update
@@ -22,20 +14,75 @@ module Api
         head :no_content
       end
 
-      def destroy
-        @parent.destroy
-        head :no_content
+      def sign_in
+        @parent = Parent.find_by!(email: email_params)
+        if @parent.authenticate(password_params)
+          set_jwt_session
+          success_response
+        else
+          not_authorized
+        end
+      end
+
+      def sign_up
+        @parent = Parent.new(parent_params)
+        if @parent.save
+          set_jwt_session
+          success_response
+        else
+          render json: { error: @parent.errors.full_messages.join(' ') }, status: :unprocessable_entity
+        end
+      end
+
+      def refresh
+        session = JWTSessions::Session.new(payload: claimless_payload, refresh_by_access_allowed: true)
+        @tokens = session.refresh_by_access_payload do
+          raise JWTSessions::Errors::Unauthorized, 'Malicious activity detected'
+        end
+        set_jwt_cookies
+        render json: { csrf: @tokens[:csrf] }
+      end
+
+      def logout
+        session = JWTSessions::Session.new(payload: payload)
+        session.flush_by_access_payload
+        render json: :ok
       end
 
 
       private
 
-      def parent_params
-        params.permit(:email, :encrypted_password, :user_id)
-      end
+      helper_method :tokens, :parent_params
 
       def set_parent
         @parent = Parent.find(params[:id])
+      end
+
+      def parent_params
+        @parent_params ||= params.permit(:email, :password)
+      end
+
+      def password_params
+        parent_params.require(:password)
+      end
+
+      def email_params
+        parent_params.require(:email)
+      end
+
+      def set_jwt_session
+        payload  = { parent_id: @parent.id }
+        session = JWTSessions::Session.new(payload: payload, refresh_by_access_allowed: true)
+        @tokens = session.login
+        set_jwt_cookies
+      end
+
+      def set_jwt_cookies
+        response.set_cookie(JWTSessions.access_cookie, value: @tokens[:access], httponly: true, secure: Rails.env.production?)
+      end
+
+      def success_response
+        render json: { status: 200, message: 'parent correctly signed in', csrf: @tokens[:csrf], parent_id: @parent.id }
       end
     end
   end

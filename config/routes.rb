@@ -1,9 +1,19 @@
 Rails.application.routes.draw do
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
+
+  root to: "front/homepage#index"
+
+  scope module: :front do
+    get 'homepage', action: :index, controller: 'homepage'
+  end
+
   scope module: :api do
     namespace :v1 do
-      resources :users, only: [:index, :show, :create, :update, :destroy]
-      resources :parents, only: [:index, :show, :create, :update, :destroy]
+      post 'parent_sign_up',  action: :sign_up, controller: 'parents'
+      post 'parent_sign_in',  action: :sign_in, controller: 'parents'
+      post 'parent_refresh',  action: :refresh, controller: 'parents'
+      delete 'parent_logout', action: :logout,  controller: 'parents'
+      resources :parents, only: [:show, :update]
     end
   end
 end
