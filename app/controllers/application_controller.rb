@@ -17,6 +17,6 @@ class ApplicationController < ActionController::API
   end
 
   def not_authorized
-    render json: { error: 'Not authorized' }, status: :unauthorized
+    render json: { error: 'Not authorized, please sign_in first on /v1/parent_sign_in?email=*&password=*' }, status: :unauthorized
   end
 end
