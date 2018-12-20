@@ -3,6 +3,7 @@ class ApplicationController < ActionController::API
   include Response
   include ExceptionHandler
   include JWTSessions::RailsAuthorization
+  include VerifyAuthorisationForRequestedResource
   rescue_from JWTSessions::Errors::Unauthorized, with: :not_authorized
 
 
@@ -12,11 +13,8 @@ class ApplicationController < ActionController::API
     @current_parent ||= Parent.find(payload['parent_id'])
   end
 
-  def current_kid
-    @current_parent ||= Kid.find(payload['kid_id'])
-  end
-
-  def not_authorized
-    render json: { error: 'Not authorized, please sign_in first on /v1/parent_sign_in?email=*&password=*' }, status: :unauthorized
-  end
+  # When the sign_up & login logic will be implemented for the kid as well, I will have a current_kid as well. Not a current user
+  # def current_kid
+  #   @current_parent ||= Kid.find(payload['kid_id'])
+  # end
 end

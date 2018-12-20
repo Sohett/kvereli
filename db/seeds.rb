@@ -15,4 +15,10 @@ kids = Kid.create!([
   { first_name: 'Thomas', last_name: 'Hviegw', parent: Parent.fourth, birthdate: Date.new(2010, 11, 24) }
 ])
 
-puts('Parents created', 'Kids created')
+activities = Activity.create!([
+  { activity_name: 'Hockey', description: 'Entrainements et match de Hochey à LLN', kid: Kid.first },
+  { activity_name: 'Foot', description: 'Entrainements et match de Foot à Wavre', kid: Kid.second },
+  { activity_name: 'Piano', description: 'Cours de piano à Wavre', kid: Kid.third }
+])
+
+puts('Parents created', 'Kids created', 'Activities created for the kids')

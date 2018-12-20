@@ -14,6 +14,8 @@ ActiveRecord::Schema.define(version: 2018_10_28_153605) do
 
   create_table "activities", force: :cascade do |t|
     t.string "activity_name"
+    t.string "description"
+    t.json "details"
     t.integer "kid_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

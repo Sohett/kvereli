@@ -1,24 +1,22 @@
 # README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+TODO:
+<!-- 1. DONE Kid controller - create (add kids as a parent)
+2. DONE Kid controller - destroy (remove a kid as a parent) -->
 
-Things you may want to cover:
+<!-- 0. Pundit the parent controller -->
 
-* Ruby version
+<!-- 3. Activities controller
+4. CRUD activities for a kid -->
 
-* System dependencies
+5. Journeys controller
+6. CRUD journeys
 
-* Configuration
+7. Seed the application
+8. Put everything on Heroku (http://api.covoiturage-enfant.com)
 
-* Database creation
+9. Buy and configure a domain name (cloudflare) (http://covoiturage-enfant.com/)
+10. Configure a really quick Wordpress/other build-in website: front part + DNS
 
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+11. Instantiation of front VueJS app (http://app.covoiturage-enfant.com)
+12. API connection for

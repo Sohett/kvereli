@@ -2,8 +2,9 @@ module Api
   module V1
     class ParentsController < ApplicationController
       before_action :authorize_refresh_by_access_request!, only: [:refresh]
-      before_action :authorize_access_request!, only: [:show, :update]
+      before_action :authorize_access_request!, only: [:show, :update, :logout]
       before_action :set_parent, only: [:show, :update]
+      before_action :verify_resource_is_authorised, only: [:show, :update]
 
       def show
         json_response(@parent)
@@ -55,11 +56,11 @@ module Api
       helper_method :tokens, :parent_params
 
       def set_parent
-        @parent = Parent.find(params[:id])
+        @parent = Parent.find(parent_params.require(:id))
       end
 
       def parent_params
-        @parent_params ||= params.permit(:email, :password)
+        @parent_params ||= params.permit(:email, :password, :id)
       end
 
       def password_params
@@ -82,7 +83,7 @@ module Api
       end
 
       def success_response
-        render json: { status: 200, message: 'parent correctly signed in', csrf: @tokens[:csrf], parent_id: @parent.id }
+        render json: { message: 'parent correctly signed in', csrf: @tokens[:csrf], parent_id: @parent.id }, status: :ok
       end
     end
   end

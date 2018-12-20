@@ -1,8 +1,10 @@
 module Api
   module V1
-    class ParentsController < ApplicationController
+    class KidsController < ApplicationController
       before_action :authorize_access_request!
-      before_action :set_kid, only: [:show, :update]
+      before_action :set_parent
+      before_action :set_kid, only: [:show, :update, :destroy]
+      before_action :verify_resource_is_authorised
 
       def index
         json_response(current_parent.kids)
@@ -13,18 +15,47 @@ module Api
       end
 
       def create
-        #code
+        @kid = Kid.new(kid_payload)
+        if @kid.save!
+          render json: { message: 'kid correctly created', kid: @kid }, status: :ok
+        else
+          render json: { error: @kid.errors.full_messages.join(' '), message: 'To create a kid, provide a first_name, last_name, birthdate in this specific format (dd/mm/yyyy), parent_id' }, status: :unprocessable_entity
+        end
       end
 
       def update
         @kid.update(kid_params)
-        head :no_content
+        render json: { message: 'Record successfully updated', kid: @kid}, status: :ok
       end
+
+      def destroy
+        @kid.destroy!
+        render json: { message: 'Record successfully deleted' }, status: :ok
+      end
+
 
       private
 
+      def set_parent
+        @parent ||= Parent.find(kid_params.require(:parent_id))
+      end
+
       def set_kid
-        @kid = Kid.find(params[:id])
+        @kid ||= Kid.find(kid_params.require(:id))
+      end
+
+      def kid_params
+        @kid_params ||= params.permit(:first_name, :last_name, :birthdate, :parent_id, :id)
+      end
+
+      def kid_payload
+        parent_payload = { parent_id: current_parent.id }
+        @kid_params[:birthdate] = kid_birthdate
+        @kid_params.merge(parent_payload)
+      end
+
+      def kid_birthdate
+        @kid_params.require(:birthdate).to_date
       end
     end
   end
