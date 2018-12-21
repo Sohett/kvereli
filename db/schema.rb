@@ -13,6 +13,8 @@
 ActiveRecord::Schema.define(version: 2018_10_28_153605) do
 
   create_table "activities", force: :cascade do |t|
+    t.datetime "activity_datetime"
+    t.string "recurrency"
     t.string "activity_name"
     t.string "description"
     t.json "details"
@@ -23,14 +25,16 @@ ActiveRecord::Schema.define(version: 2018_10_28_153605) do
   end
 
   create_table "journeys", force: :cascade do |t|
-    t.integer "parent_id"
-    t.integer "kid_id"
+    t.datetime "pickup_time"
+    t.json "details"
+    t.string "pick_up_address"
+    t.string "destination_address"
     t.integer "activity_id"
+    t.integer "driver_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["activity_id"], name: "index_journeys_on_activity_id"
-    t.index ["kid_id"], name: "index_journeys_on_kid_id"
-    t.index ["parent_id"], name: "index_journeys_on_parent_id"
+    t.index ["driver_id"], name: "index_journeys_on_driver_id"
   end
 
   create_table "kids", force: :cascade do |t|
@@ -43,11 +47,11 @@ ActiveRecord::Schema.define(version: 2018_10_28_153605) do
     t.index ["parent_id"], name: "index_kids_on_parent_id"
   end
 
-  create_table "operators", force: :cascade do |t|
-    t.string "email"
-    t.string "password_digest"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+  create_table "drivers", force: :cascade do |t|
+    t.integer "parent_id"
+    t.string "driving_licence"
+    t.string "status"
+    t.index ["parent_id"], name:"index_drivers_on_parent_id"
   end
 
   create_table "parents", force: :cascade do |t|

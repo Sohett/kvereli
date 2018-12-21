@@ -2,6 +2,7 @@ module Api
   module V1
     class KidsController < ApplicationController
       before_action :authorize_access_request!
+      before_action :payload_verification, only: [:create, :update]
       before_action :set_parent
       before_action :set_kid, only: [:show, :update, :destroy]
       before_action :verify_resource_is_authorised
@@ -19,7 +20,7 @@ module Api
         if @kid.save!
           render json: { message: 'kid correctly created', kid: @kid }, status: :ok
         else
-          render json: { error: @kid.errors.full_messages.join(' '), message: 'To create a kid, provide a first_name, last_name, birthdate in this specific format (dd/mm/yyyy), parent_id' }, status: :unprocessable_entity
+          render json: { error: @kid.errors.full_messages.join(' ') }, status: :unprocessable_entity
         end
       end
 
@@ -46,6 +47,10 @@ module Api
 
       def kid_params
         @kid_params ||= params.permit(:first_name, :last_name, :birthdate, :parent_id, :id)
+      end
+
+      def payload_verification
+        render json: { message: 'Missing birthdate: in the format(dd/mm/yyyy)' }, status: :precondition_failed if !kid_params[:birthdate]
       end
 
       def kid_payload

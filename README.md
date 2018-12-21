@@ -8,9 +8,9 @@ TODO:
 
 <!-- 3. Activities controller
 4. CRUD activities for a kid -->
-
+<!--
 5. Journeys controller
-6. CRUD journeys
+6. CRUD journeys -->
 
 7. Seed the application
 8. Put everything on Heroku (http://api.covoiturage-enfant.com)
